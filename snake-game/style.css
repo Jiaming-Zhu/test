@@ -39,7 +39,7 @@ h1 {
     color: #333;
 }
 
-#start-btn {
+#start-btn, #ai-toggle-btn {
     background-color: #4CAF50;
     color: white;
     border: none;
@@ -48,10 +48,19 @@ h1 {
     cursor: pointer;
     font-size: 16px;
     transition: background-color 0.3s;
+    margin-left: 5px;
 }
 
-#start-btn:hover {
+#start-btn:hover, #ai-toggle-btn:hover {
     background-color: #45a049;
+}
+
+#ai-toggle-btn.active {
+    background-color: #2196F3;
+}
+
+#ai-toggle-btn.active:hover {
+    background-color: #0b7dda;
 }
 
 #game-canvas {

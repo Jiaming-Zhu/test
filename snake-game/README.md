@@ -16,6 +16,7 @@
 - 防止蛇反向移动的逻辑控制
 - 食物随机生成且不会出现在蛇身上
 - 网格化游戏界面，提高视觉清晰度
+- **AI自动控制功能**：实现智能寻路吃食物并避免碰撞
 
 ## 使用技术
 
@@ -209,6 +210,93 @@ switch(e.keyCode) {
 
 无需安装任何依赖或构建步骤，游戏可以直接在现代浏览器中运行。
 
+## AI自动控制功能
+
+游戏实现了智能AI控制功能，能够自动寻找路径吃到食物并避免碰撞。
+
+### 算法实现
+
+AI控制器使用综合评分算法来确保蛇能够高效地寻找食物并避免碰撞：
+
+1. **方向评分系统**：为每个可能的移动方向分配一个安全分数，综合考虑多种因素。
+
+```javascript
+// 评分系统核心实现
+evaluateDirectionSafety(direction) {
+    const head = this.gameState.snake[0];
+    const food = this.gameState.food;
+    const nextPos = this.getNextPosition(head, direction);
+    
+    // 如果不安全，直接返回最低分
+    if (!this.isSafePosition(nextPos)) {
+        return -1000;
+    }
+    
+    // 基础分 - 接近食物的奖励
+    const currentDist = Math.abs(head.x - food.x) + Math.abs(head.y - food.y);
+    const nextDist = Math.abs(nextPos.x - food.x) + Math.abs(nextPos.y - food.y);
+    let score = currentDist - nextDist;
+    
+    // 前瞻安全加分
+    if (this.lookAheadSafety(direction)) {
+        score += 5;
+    }
+    
+    // 可达空间评估
+    const accessibleSpace = this.calculateAccessibleSpace(nextPos);
+    score += accessibleSpace / 10;
+    
+    // 远离墙壁的奖励
+    const borderDistance = Math.min(
+        nextPos.x,
+        nextPos.y,
+        gridWidth - 1 - nextPos.x,
+        gridHeight - 1 - nextPos.y
+    );
+    score += borderDistance / 2;
+    
+    return score;
+}
+```
+
+2. **前瞻式安全检查**：模拟蛇未来几步的移动，评估路径安全性。
+
+```javascript
+lookAheadSafety(initialDirection, steps = 3) {
+    // 创建虚拟蛇副本并模拟移动
+    // 检查未来几步是否会导致碰撞
+    // 返回路径是否安全
+}
+```
+
+3. **可达空间分析**：使用洪水填充算法计算每个方向的可达空间大小，避免进入死胡同。
+
+```javascript
+calculateAccessibleSpace(startPos) {
+    // 使用BFS算法计算从起点可以到达的格子数量
+    // 返回可达空间大小
+}
+```
+
+4. **智能避障策略**：
+   - **远离墙壁**：主动避开靠近墙壁的位置，减少被困机会
+   - **空间感知**：优先选择可达空间更大的方向，避免进入死胡同
+   - **前瞻规划**：通过模拟未来几步移动，避免进入无法逃脱的路径
+   - **综合决策**：平衡接近食物和安全性，做出最优决策
+
+### 使用方法
+
+1. 点击界面上的"启用AI"按钮或按键盘上的"A"键来启用/禁用AI控制
+2. 按键盘上的"P"键可以切换显示/隐藏AI计算的路径
+3. AI启用后，蛇将自动寻找路径吃食物并避免碰撞
+4. 蓝色半透明方块显示AI计算的路径
+
+### 性能考虑
+
+- AI会在每一步重新计算路径，以适应动态变化的蛇身
+- 使用优先队列优化A*算法性能
+- 实现了多层安全策略，确保蛇尽可能避免死亡
+
 ## 未来改进计划
 
 - 添加难度级别选择
@@ -216,6 +304,8 @@ switch(e.keyCode) {
 - 添加音效和背景音乐
 - 保存最高分记录
 - 添加特殊食物和能力道具
+- 优化AI算法，提高寻路效率
+- 添加AI难度设置
 
 ---
 
